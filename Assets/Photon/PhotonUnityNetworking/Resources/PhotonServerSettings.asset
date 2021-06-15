@@ -36,6 +36,11 @@ MonoBehaviour:
   - ClickRpc
   - DestroyRpc
   - RPCAddPoints
+  - RPCAddAmmo
+  - RPCTakeLife
+  - RPCTakeHP
+  - RpcShowEnd
+  - RPCDestroy
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

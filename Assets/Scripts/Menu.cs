@@ -6,6 +6,8 @@ public class Menu : MonoBehaviour
 {
     public string menuName;
     public bool open;
+    
+
 
     public void Open(){
         if(menuName == "create room"){

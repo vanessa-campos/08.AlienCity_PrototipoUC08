@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class GameManager : MonoBehaviourPunCallbacks
+public class GameManager2D : MonoBehaviourPunCallbacks
 {
     [SerializeField] GameObject playerPrefab;
     public Transform[] spawnPos;

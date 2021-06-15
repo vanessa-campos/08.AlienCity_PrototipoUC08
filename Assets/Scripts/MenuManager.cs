@@ -5,12 +5,10 @@ using UnityEngine;
 public class MenuManager : MonoBehaviour
 {
     public static MenuManager Instance; 
-
     [SerializeField] Menu[] menus;
+    public int currentMenu;
 
-
-    private void Awake()
-    {
+    private void Awake() {
         Instance = this;
     }
 
@@ -30,10 +28,19 @@ public class MenuManager : MonoBehaviour
                 CloseMenu(menus[i]);
             }
         }
+        // currentMenu = menu.menuName;
         menu.Open();
     }
+    
     public void CloseMenu(Menu menu){
         menu.Close();
+    }
+
+    private void Update(){
+        for (int i = 0; i < menus.Length; i++){
+            if(menus[i].open)
+            currentMenu = i;
+        } 
     }
 
 }
