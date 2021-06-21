@@ -33,6 +33,7 @@ public class GameManager2D : MonoBehaviourPunCallbacks
     }
 
     public override void OnLeftRoom(){
+        PhotonNetwork.Disconnect();
         SceneManager.LoadScene("Menu");
     }
 }

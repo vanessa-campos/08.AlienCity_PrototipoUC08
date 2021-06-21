@@ -7,46 +7,37 @@ using UnityEngine.UI;
 
 public class GameManager3D : MonoBehaviourPunCallbacks
 {
-    public static GameManager3D Instance;
     [SerializeField] GameObject playerPrefab;
+    public static GameManager3D Instance;
     public Transform[] spawnPos;
-    PlayerController3D lastAlive = null;
-    int defeated;
     GameObject minimap;
+    bool morePlayers = false;
+    int i;
 
     private void Awake() {
         Instance = this;
         minimap = GameObject.FindGameObjectWithTag("minimap");
         minimap.SetActive(false);
+        if(PhotonNetwork.IsMasterClient && playerPrefab != null){   
+            i = PhotonNetwork.CurrentRoom.PlayerCount;
+        } 
     }
     
     private void Start(){
-        if(playerPrefab != null){   
-            if(PhotonNetwork.CountOfPlayersInRooms != 0){
-                int i = PhotonNetwork.CurrentRoom.PlayerCount - 1;
-                PhotonNetwork.Instantiate(playerPrefab.name, spawnPos[i].position,spawnPos[i].rotation);               
-            }else{             
-                PhotonNetwork.Instantiate(playerPrefab.name, spawnPos[0].position,spawnPos[0].rotation);  
-            }
-        }        
+        PhotonNetwork.Instantiate(playerPrefab.name, spawnPos[i].position,spawnPos[i].rotation);                      
         minimap.SetActive(true);  
     }
     
     private void Update(){
-        PlayerController3D[] players = GameObject.FindObjectsOfType<PlayerController3D>();  
-        for (int i = 0; i < players.Length; i++){
-            if(players[i].dead == true){
-                players[i].ShowEnd(false);
-                defeated++;
-                Invoke(nameof(LeaveRoom), 2);
-            }else{
-                lastAlive = players[i];
-            }
-        }   
-        if(players.Length > 1 && defeated == players.Length - 1 && lastAlive != null){
-            lastAlive.ShowEnd(true);
-            Invoke(nameof(LeaveRoom), 3);
+        PlayerController3D[] players = GameObject.FindObjectsOfType<PlayerController3D>(); 
+        if(players.Length > 1){
+            morePlayers = true;
         }
+        foreach (var player in players){
+            if(players.Length == 1 && player.HP > 0 && morePlayers){
+                player.ShowEnd(true);
+            }  
+        }     
     }
 
     public void LeaveRoom(){

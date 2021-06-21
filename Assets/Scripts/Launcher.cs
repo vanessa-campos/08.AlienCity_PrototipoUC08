@@ -44,7 +44,11 @@ public class Launcher : MonoBehaviourPunCallbacks
     }   
 
     public void ConnectGame(){
-        PhotonNetwork.JoinRandomRoom();
+        if(roomNameText.text != "gameRoom"){
+            PhotonNetwork.CreateRoom("gameRoom", new RoomOptions() { MaxPlayers = 2 });
+        }else{
+            PhotonNetwork.JoinRandomRoom();
+        }
     } 
 
     public override void OnJoinRandomFailed(short returnCode, string message){

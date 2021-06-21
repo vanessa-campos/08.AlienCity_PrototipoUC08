@@ -12,9 +12,10 @@ public class PlayerController3D : MonoBehaviourPunCallbacks, IPunObservable
     public float Speed = 7;
     public float SpinSpeed = 3;
     public float jumpForce = 5;
-    public bool dead = false;
+    public bool isGrounded = false;
     public Transform groundCheck;
     public Transform shootpoint;
+    public GameObject target;
     public GameObject bulletPrefab;
     public SkinnedMeshRenderer colorSkin;
     public GameObject UI;
@@ -31,7 +32,6 @@ public class PlayerController3D : MonoBehaviourPunCallbacks, IPunObservable
     Animator _animator;
     float horizontal;
     float vertical;
-    bool isGrounded;
     bool jump;
     bool run;
 
@@ -39,6 +39,7 @@ public class PlayerController3D : MonoBehaviourPunCallbacks, IPunObservable
         _rigidbody = GetComponent<Rigidbody>();
         _animator = GetComponent<Animator>();
         panelVictory.SetActive(false);
+        target.SetActive(false);
     }
 
     private void Start(){
@@ -59,12 +60,12 @@ public class PlayerController3D : MonoBehaviourPunCallbacks, IPunObservable
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");
         // Get Jump Button
-        if(Input.GetButtonDown("Jump") && isGrounded){
+        if(Input.GetKeyDown(KeyCode.Space) && isGrounded){
             jump = true;    
         }
         // Get Fire Button
         if(Ammo > 0){
-            if(Input.GetButtonDown("Fire1")){
+            if(Input.GetKeyDown(KeyCode.LeftControl)){
                 soundShoot.Play();
                 Ammo -= 1;
                 PhotonNetwork.Instantiate(bulletPrefab.name, shootpoint.position, transform.rotation);
@@ -79,7 +80,7 @@ public class PlayerController3D : MonoBehaviourPunCallbacks, IPunObservable
         }
         if(HP <= 0){
             _animator.SetTrigger("dead");
-            StartCoroutine(Dead());
+            ShowEnd(false);
         }
         // Ammo Text
         if(Ammo < 0){
@@ -88,6 +89,12 @@ public class PlayerController3D : MonoBehaviourPunCallbacks, IPunObservable
         textAmmo.text = Ammo.ToString();   
         // HealthBar   
         imageHealthBar1.fillAmount = imageHealthBar2.fillAmount;
+        // Show Target Object
+        // if(Physics.Raycast(transform.position, transform.forward, 7)){
+        //     target.SetActive(false);
+        // }else{
+        //     target.SetActive(true);
+        // }
     }
 
     private void FixedUpdate(){
@@ -149,21 +156,14 @@ public class PlayerController3D : MonoBehaviourPunCallbacks, IPunObservable
         Text victoryText = GameObject.Find("TextVictory").GetComponent<Text>();
         if(victory){
             victoryText.text = "WINNER";
+            Invoke(nameof(LeaveRoom), 2);
         }else{
             victoryText.text = "GAME OVER";  
+            Invoke(nameof(LeaveRoom), 2);
         }
     }    
     public void ShowEnd(bool victory){
         photonView.RPC("RpcShowEnd", RpcTarget.All, victory);
-    }
-
-    void LeaveRoom(){
-        GameManager3D.Instance.LeaveRoom();
-    }
-
-    IEnumerator Dead(){
-        yield return new WaitForSeconds(2);
-        dead = true;
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){
@@ -172,7 +172,10 @@ public class PlayerController3D : MonoBehaviourPunCallbacks, IPunObservable
         }else{
             HP = (int)stream.ReceiveNext();
         }
+    }
 
+    public void LeaveRoom(){
+        GameManager3D.Instance.LeaveRoom();
     }
 
 }

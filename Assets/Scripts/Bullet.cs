@@ -11,6 +11,7 @@ public class Bullet : MonoBehaviourPun
     private void Start(){
         _rigidbody = GetComponent<Rigidbody>();
         _rigidbody.AddForce(transform.forward * speed, ForceMode.Impulse);
+        StartCoroutine(nameof(DestroyBullet));
     }
 
     void OnTriggerEnter(Collider other){
@@ -21,5 +22,10 @@ public class Bullet : MonoBehaviourPun
             PlayerController3D player = other.GetComponent<PlayerController3D>();
             player.TakeHP();
         }        
+    }
+
+    IEnumerator DestroyBullet(){
+        yield return new WaitForSeconds(2);
+        PhotonNetwork.Destroy(gameObject);
     }
 }

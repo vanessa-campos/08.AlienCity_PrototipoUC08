@@ -24,7 +24,4 @@ public class PlayerListItem : MonoBehaviourPunCallbacks
     public override void OnLeftRoom(){
         Destroy(gameObject);
     }
-    
-    public void OnCLick(){
-    }
 }
