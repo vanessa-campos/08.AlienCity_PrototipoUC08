@@ -44,17 +44,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     }   
 
     public void ConnectGame(){
-        if(roomNameText.text != "gameRoom"){
-            PhotonNetwork.CreateRoom("gameRoom", new RoomOptions() { MaxPlayers = 2 });
-        }else{
-            PhotonNetwork.JoinRandomRoom();
-        }
+        PhotonNetwork.JoinOrCreateRoom("gameRoom", new RoomOptions() { MaxPlayers = 2}, new TypedLobby("lobby", LobbyType.Default));
     } 
-
-    public override void OnJoinRandomFailed(short returnCode, string message){
-        Debug.Log("You have failed to join a room. Code: " + returnCode + "; Message: " + message);
-        PhotonNetwork.CreateRoom("gameRoom", new RoomOptions() { MaxPlayers = 2 });
-    }
     
     public void CreateRoom(){
         if (string.IsNullOrEmpty(roomNameInputField.text))
